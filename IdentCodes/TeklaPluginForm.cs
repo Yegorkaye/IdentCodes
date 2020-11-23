@@ -90,7 +90,8 @@ namespace IdentCodes
         {
             var matString = ICG.GetMaterialStringFromPart(part);
 
-            var identCode = $"I{ICG.GetMaterialClassCode(part)}"    +
+            var identCode = $"I" +
+                            $"{ICG.GetMaterialClassCode(part)}"    +
                             $"{ICG.GetMaterialTypeCode(part)}"      +
                             $"{ICG.GetToughnessCode(matString)}"    +
                             $"{ICG.GetRandomNumberForPlate(part)}"  +
