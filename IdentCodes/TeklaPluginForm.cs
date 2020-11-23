@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Tekla.Structures.Dialog;
+using Tekla.Structures.Model;
+using ICG = IdentCodes.IdentCodeGenerator;
 
 namespace IdentCodes
 {
@@ -51,22 +53,56 @@ namespace IdentCodes
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var selectedPartsEn = new Tekla.Structures.Model.UI.ModelObjectSelector().GetSelectedObjects();
-            var selectedParts = new List<Tekla.Structures.Model.Part>();
-            while (selectedPartsEn.MoveNext())
-            {
-                if (selectedPartsEn.Current is Tekla.Structures.Model.Part part)
-                    selectedParts.Add(part);
-            }
+
+            var selectedParts = GetSelectedParts();
 
             try
             {
-                IdentCodeGenerator.GenerateCodes(selectedParts);
+                GenerateCodes(selectedParts);
             }
             catch(Exception exc)
             {
                 MessageBox.Show(exc.Message);
             }
+        }
+
+        private List<Part> GetSelectedParts()
+        {
+            var selectedPartsEn = new Tekla.Structures.Model.UI
+                .ModelObjectSelector().GetSelectedObjects();
+            var selectedParts = new List<Part>();
+            while (selectedPartsEn.MoveNext())
+            {
+                if (selectedPartsEn.Current is Part part)
+                    selectedParts.Add(part);
+            }
+
+            return selectedParts;
+        }
+
+        private static void GenerateCodes(List<Part> parts)
+        {
+            foreach (var part in parts)
+                GenerateCode(part);
+        }
+
+        private static void GenerateCode(Part part)
+        {
+            var matString = ICG.GetMaterialStringFromPart(part);
+
+            var identCode = $"I{ICG.GetMaterialClassCode(part)}"    +
+                            $"{ICG.GetMaterialTypeCode(part)}"      +
+                            $"{ICG.GetToughnessCode(matString)}"    +
+                            $"{ICG.GetRandomNumberForPlate(part)}"  +
+                            $"{ICG.GetMaterialCode(matString)}"     +
+                            $"{ICG.GetProfileCode(part)}";
+
+            WriteCode(part, identCode);
+        }
+
+        public static void WriteCode(Part part, string code)
+        {
+            part.SetUserProperty("M_IDENT_CODE", code);
         }
     }
 }

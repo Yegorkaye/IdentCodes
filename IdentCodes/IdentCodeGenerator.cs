@@ -17,20 +17,6 @@ namespace IdentCodes
             HSection,
             Channel,
         }
-        public static void GenerateCodes(List<Part> parts)
-        {
-            foreach (var part in parts)
-                GenerateCode(part);
-        }
-
-        private static void GenerateCode(Part part)
-        {
-            var identCode = $"I{GetMaterialClassCode(part)}{GetMaterialTypeCode(part)}" +
-                $"{GetToughnessCode(part)}{GetRandomNumberForPlate(part)}" +
-                $"{GetMaterialCode(part)}{GetProfileCode(part)}";
-            WriteCode(part, identCode);
-        }
-
 
         #region парсинг свойств детали
         private static string GetPartClass(Part part)
@@ -119,7 +105,7 @@ namespace IdentCodes
         #endregion
 
         #region генерация частей ident-кода
-        private static string GetMaterialClassCode(Part part)
+        public static string GetMaterialClassCode(Part part)
         {
             var partClass = GetPartClass(part);
             return MaterialClassCodes[partClass];
@@ -133,7 +119,7 @@ namespace IdentCodes
                 { "TS", "T" },
             };
 
-        private static int GetMaterialTypeCode(Part part)
+        public static int GetMaterialTypeCode(Part part)
         {
             var partType = GetProfileType(part);
             return MaterialTypeCodes[partType];
@@ -204,10 +190,5 @@ namespace IdentCodes
             else throw new Exception("Отсутствует код для заданного типа сечения");
         }
         #endregion
-
-        private static void WriteCode(Part part, string code)
-        {
-            part.SetUserProperty("M_IDENT_CODE", code);
-        }
     }
 }
