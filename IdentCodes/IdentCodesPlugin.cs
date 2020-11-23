@@ -9,11 +9,11 @@ namespace IdentCodes
 {
     [Plugin("Назначить ident-коды")]
     [PluginUserInterface("IdentCodes.TeklaPluginForm")]
-    public class IdentCodes : PluginBase
+    public class IdentCodesPlugin : PluginBase
     {
         private TeklaPluginData Data { get; set; }
 
-        public IdentCodes(TeklaPluginData data)
+        public IdentCodesPlugin(TeklaPluginData data)
         {
             Data = data;
         }
