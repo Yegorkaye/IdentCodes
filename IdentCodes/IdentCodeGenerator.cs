@@ -151,7 +151,7 @@ namespace IdentCodes
 
         public static int GetMaterialCode(string materialString)
         {
-            var materialGrade = GetSteelGrade(materialString).Item1;
+            var materialGrade = GetSteelGrade(materialString).Item1.Replace('С', 'C');
 
             foreach (var acceptableGrade in MaterialCodes.Keys)
             {
