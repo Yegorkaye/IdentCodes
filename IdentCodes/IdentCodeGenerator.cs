@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Part = Tekla.Structures.Model.Part;
 
@@ -62,14 +63,18 @@ namespace IdentCodes
             { "U", ProfileType.Channel },
         };
 
-        private static Tuple<string, string> GetSteelGrade(Part part)
+        private static Tuple<string, string> GetSteelGrade(string materialString)
         {
-            var materialString = part.Material.MaterialString;
-            var steelGradeParts = materialString.Split(' ');
+            var steelGradeParts = Regex.Split(materialString, @"[- ]");
             var firstPart = steelGradeParts[0];
             var zParts = steelGradeParts.Where(p => p.ToLower().Contains("z35"));
             var secondPart = zParts.Count() > 0 ? zParts.First() : "";
             return new Tuple<string, string>(firstPart, secondPart);
+        }
+
+        public static string GetMaterialStringFromPart(Part part)
+        {
+            return part.Material.MaterialString;
         }
 
         private static double GetPlateThickness(Part part)
@@ -143,13 +148,13 @@ namespace IdentCodes
                 { ProfileType.Channel, 4 },
             };
 
-        private static int GetToughnessCode(Part part)
+        public static int GetToughnessCode(string materialString)
         {
-            var materialGrade = GetSteelGrade(part).Item2;
+            var materialGrade = GetSteelGrade(materialString).Item2;
             return materialGrade.Length == 0 ? 0 : 1;
         }
 
-        private static string GetRandomNumberForPlate(Part part)
+        public static string GetRandomNumberForPlate(Part part)
         {
             var profileType = GetProfileType(part);
             if (profileType == ProfileType.Plate)
@@ -158,31 +163,34 @@ namespace IdentCodes
                 return "";
         }
 
-        private static int GetMaterialCode(Part part)
+        public static int GetMaterialCode(string materialString)
         {
-            var materialGrade = GetSteelGrade(part).Item1;
-            if (materialGrade.Contains('-'))
+            var materialGrade = GetSteelGrade(materialString).Item1;
+
+            foreach (var acceptableGrade in MaterialCodes.Keys)
             {
-                materialGrade = materialGrade.Substring(0, materialGrade.IndexOf('-'));
+                if (materialGrade.Contains(acceptableGrade))
+                {
+                    return MaterialCodes[acceptableGrade];
+                }
             }
-            return MaterialCodes[materialGrade];
+
+            throw new Exception("Материал не найден");
         }
 
         private static Dictionary<string, int> MaterialCodes =
             new Dictionary<string, int>
             {
+                { "C355Б", 6 },
                 { "C355", 0 },
-                { "C355-6", 0 },
-                { "C355Б-KCV-40", 0 },
                 { "C345", 1 },
                 { "S420", 2 },
                 { "API5L", 3 },
                 { "S355", 4 },
-                { "С255", 5 },
-                { "С355Б", 6 },
+                { "C255", 5 },
             };
 
-        private static string GetProfileCode(Part part)
+        public static string GetProfileCode(Part part)
         {
             var profileType = GetProfileType(part);
             if (profileType == ProfileType.Plate)
