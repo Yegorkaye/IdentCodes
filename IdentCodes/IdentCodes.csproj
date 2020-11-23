@@ -76,7 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IdentCodeGenerator.cs" />
-    <Compile Include="TeklaPlugin.cs" />
+    <Compile Include="IdentCodesPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TeklaPluginData.cs" />
     <Compile Include="TeklaPluginForm.cs">
