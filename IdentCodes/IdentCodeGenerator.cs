@@ -65,9 +65,22 @@ namespace IdentCodes
 
         private static double GetPlateThickness(Part part)
         {
-            var thicknessPropertyName = "WIDTH";
-            var thickness = 0.0;
-            part.GetReportProperty(thicknessPropertyName, ref thickness);
+            var profile = part.Profile.ProfileString;
+            var thickness = 0D;
+            if (!profile.Contains('*'))
+            {
+                thickness = double.Parse(profile.Substring(2));
+            }
+            else
+            {
+                var thicknesList = profile.Substring(2).Split('*')
+                    .Select(a => { var s = double.TryParse(a, out double r); return s ? r : double.NaN;  })
+                    .Where(a => a != double.NaN);
+                thickness = thicknesList.Min();
+            }
+            //var thicknessPropertyName = "WIDTH";
+            //var thickness = 0.0;
+            //part.GetReportProperty(thicknessPropertyName, ref thickness);
             return Math.Round(thickness, 4);
         }
 

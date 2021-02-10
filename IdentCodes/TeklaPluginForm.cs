@@ -60,7 +60,11 @@ namespace IdentCodes
             {
                 GenerateCodes(selectedParts);
             }
-            catch(Exception exc)
+            catch (PartException exc)
+            {
+                MessageBox.Show($"При назначении кода детали с идентификатором {exc.Part.Identifier.ToString()} произошла ошибка.\n{exc.InnerException?.Message}");
+            }
+            catch (Exception exc)
             {
                 MessageBox.Show(exc.Message);
             }
@@ -83,7 +87,17 @@ namespace IdentCodes
         private static void GenerateCodes(List<Part> parts)
         {
             foreach (var part in parts)
-                GenerateCode(part);
+            {
+                try
+                {
+                    GenerateCode(part);
+                }
+                catch (Exception e)
+                {
+                    var exc = new PartException(part);
+                    throw exc;
+                }
+            }
         }
 
         private static void GenerateCode(Part part)
@@ -91,11 +105,11 @@ namespace IdentCodes
             var matString = ICG.GetMaterialStringFromPart(part);
 
             var identCode = $"I" +
-                            $"{ICG.GetMaterialClassCode(part)}"    +
-                            $"{ICG.GetMaterialTypeCode(part)}"      +
-                            $"{ICG.GetToughnessCode(matString)}"    +
-                            $"{ICG.GetRandomNumberForPlate(part)}"  +
-                            $"{ICG.GetMaterialCode(matString)}"     +
+                            $"{ICG.GetMaterialClassCode(part)}" +
+                            $"{ICG.GetMaterialTypeCode(part)}" +
+                            $"{ICG.GetToughnessCode(matString)}" +
+                            $"{ICG.GetRandomNumberForPlate(part)}" +
+                            $"{ICG.GetMaterialCode(matString)}" +
                             $"{ICG.GetProfileCode(part)}";
 
             WriteCode(part, identCode);
