@@ -94,7 +94,7 @@ namespace IdentCodes
                 }
                 catch (Exception e)
                 {
-                    var exc = new PartException(part);
+                    var exc = new PartException(part, e);
                     throw exc;
                 }
             }
