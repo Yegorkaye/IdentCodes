@@ -17,6 +17,7 @@ namespace IdentCodes
             HSection,
             Channel,
             Angle,
+            Cone,
         }
 
         #region парсинг свойств детали
@@ -37,6 +38,8 @@ namespace IdentCodes
             var profileTypePropertyName = "PROFILE_TYPE";
             var profileTypeProperty = "";
             part.GetReportProperty(profileTypePropertyName, ref profileTypeProperty);
+            if (part.Profile.ProfileString.Contains("EPD"))
+                return ProfileType.Cone;
             return ProfTypePropToEnum[profileTypeProperty];
         }
 
@@ -92,6 +95,27 @@ namespace IdentCodes
             var diameter = 0.0;
             part.GetReportProperty(diameterPropertyName, ref diameter);
             return Math.Round(diameter, 1);
+        }
+
+        private static double GetMaxConeDiameter(Part part)
+        {
+            return GetConeDiameters(part).Max();
+        }
+
+        private static double GetMinConeDiameter(Part part)
+        {
+            return GetConeDiameters(part).Min();
+        }
+
+        private static List<double> GetConeDiameters(Part part)
+        {
+            var firstDiameterPropertyName = "PROFILE.MAJOR_AXIS_LENGTH_1";
+            var secondDiameterPropertyName = "PROFILE.MAJOR_AXIS_LENGTH_2";
+            var firstDiameter = 0D;
+            var secondDiameter = 0D;
+            part.GetReportProperty(firstDiameterPropertyName, ref firstDiameter);
+            part.GetReportProperty(secondDiameterPropertyName, ref secondDiameter);
+            return new List<double> { firstDiameter, secondDiameter };
         }
 
         private static double GetTubeThickness(Part part)
@@ -164,6 +188,7 @@ namespace IdentCodes
                 { ProfileType.HSection, 3 },
                 { ProfileType.Channel, 4 },
                 { ProfileType.Angle, 5 },
+                { ProfileType.Cone, 6 },
             };
 
         public static int GetToughnessCode(string materialString)
@@ -231,6 +256,9 @@ namespace IdentCodes
                     + Math.Round(GetWebThickness(part)).ToString();
             else if (profileType == ProfileType.Angle)
                 return Math.Round(GetProfileHeight(part)).ToString() + Math.Round(GetAngleThickness(part)).ToString();
+            else if (profileType == ProfileType.Cone)
+                return Math.Round(GetMaxConeDiameter(part)).ToString() + Math.Round(GetMinConeDiameter(part)).ToString() 
+                    + Math.Round(GetTubeThickness(part));
             else throw new Exception("Отсутствует код для заданного типа сечения");
         }
         #endregion

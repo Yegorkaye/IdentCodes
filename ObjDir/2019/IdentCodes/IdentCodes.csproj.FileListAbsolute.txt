@@ -1,0 +1,8 @@
+C:\Users\Егор\Documents\Работа\КГЦМ\ident коды\IdentCodes\IdentCodes\bin\IdentCodes.dll
+C:\Users\Егор\Documents\Работа\КГЦМ\ident коды\IdentCodes\IdentCodes\bin\IdentCodes.pdb
+C:\Users\Егор\Documents\Работа\КГЦМ\ident коды\IdentCodes\ObjDir\2019\IdentCodes\IdentCodes.csprojAssemblyReference.cache
+C:\Users\Егор\Documents\Работа\КГЦМ\ident коды\IdentCodes\ObjDir\2019\IdentCodes\IdentCodes.TeklaPluginForm.resources
+C:\Users\Егор\Documents\Работа\КГЦМ\ident коды\IdentCodes\ObjDir\2019\IdentCodes\IdentCodes.csproj.GenerateResource.cache
+C:\Users\Егор\Documents\Работа\КГЦМ\ident коды\IdentCodes\ObjDir\2019\IdentCodes\IdentCodes.csproj.CoreCompileInputs.cache
+C:\Users\Егор\Documents\Работа\КГЦМ\ident коды\IdentCodes\ObjDir\2019\IdentCodes\IdentCodes.dll
+C:\Users\Егор\Documents\Работа\КГЦМ\ident коды\IdentCodes\ObjDir\2019\IdentCodes\IdentCodes.pdb
