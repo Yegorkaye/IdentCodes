@@ -8,7 +8,7 @@ namespace IdentCodes
 {
     class PartException : Exception
     {
-        public PartException(Tekla.Structures.Model.Part part)
+        public PartException(Tekla.Structures.Model.Part part, Exception inner) : base(inner.Message, inner)
         {
             Part = part;
         }

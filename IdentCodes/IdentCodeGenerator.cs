@@ -40,7 +40,11 @@ namespace IdentCodes
             part.GetReportProperty(profileTypePropertyName, ref profileTypeProperty);
             if (part.Profile.ProfileString.Contains("EPD"))
                 return ProfileType.Cone;
-            return ProfTypePropToEnum[profileTypeProperty];
+            if (ProfTypePropToEnum.ContainsKey(profileTypeProperty))
+                return ProfTypePropToEnum[profileTypeProperty];
+            else
+                throw new Exception("Заданный тип профиля не поддерживается");
+
         }
 
         private static readonly Dictionary<string, ProfileType> ProfTypePropToEnum =
@@ -79,7 +83,7 @@ namespace IdentCodes
             else
             {
                 var thicknesList = profile.Substring(2).Split('*')
-                    .Select(a => { var s = double.TryParse(a, out double r); return s ? r : double.NaN;  })
+                    .Select(a => { var s = double.TryParse(a, out double r); return s ? r : double.NaN; })
                     .Where(a => a != double.NaN);
                 thickness = thicknesList.Min();
             }
@@ -257,7 +261,7 @@ namespace IdentCodes
             else if (profileType == ProfileType.Angle)
                 return Math.Round(GetProfileHeight(part)).ToString() + Math.Round(GetAngleThickness(part)).ToString();
             else if (profileType == ProfileType.Cone)
-                return Math.Round(GetMaxConeDiameter(part)).ToString() + Math.Round(GetMinConeDiameter(part)).ToString() 
+                return Math.Round(GetMaxConeDiameter(part)).ToString() + Math.Round(GetMinConeDiameter(part)).ToString()
                     + Math.Round(GetTubeThickness(part));
             else throw new Exception("Отсутствует код для заданного типа сечения");
         }
