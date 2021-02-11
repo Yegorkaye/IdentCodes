@@ -16,6 +16,7 @@ namespace IdentCodes
             Tube,
             HSection,
             Channel,
+            Angle,
         }
 
         #region парсинг свойств детали
@@ -47,6 +48,7 @@ namespace IdentCodes
             { "RO", ProfileType.Tube },
             { "RU", ProfileType.Tube },
             { "U", ProfileType.Channel },
+            { "L", ProfileType.Angle },
         };
 
         private static Tuple<string, string> GetSteelGrade(string materialString)
@@ -108,12 +110,28 @@ namespace IdentCodes
             return Math.Round(webThickness, 1);
         }
 
+        private static double GetAngleThickness(Part part)
+        {
+            var flangeThicknessPropertyName = "PROFILE.FLANGE_THICKNESS_1";
+            var flangeThickness = 0.0;
+            part.GetReportProperty(flangeThicknessPropertyName, ref flangeThickness);
+            return Math.Round(flangeThickness, 1);
+        }
+
         private static double GetProfileHeight(Part part)
         {
             var profileHeightPropertyName = "PROFILE.HEIGHT";
             var profileHeight = 0.0;
             part.GetReportProperty(profileHeightPropertyName, ref profileHeight);
             return Math.Round(profileHeight, 1);
+        }
+
+        private static double GetProfileWidth(Part part)
+        {
+            var profileWidthPropertyName = "PROFILE.WIDTH";
+            var profileWidth = 0.0;
+            part.GetReportProperty(profileWidthPropertyName, ref profileWidth);
+            return Math.Round(profileWidth, 1);
         }
         #endregion
 
@@ -145,6 +163,7 @@ namespace IdentCodes
                 { ProfileType.Tube, 2 },
                 { ProfileType.HSection, 3 },
                 { ProfileType.Channel, 4 },
+                { ProfileType.Angle, 5 },
             };
 
         public static int GetToughnessCode(string materialString)
@@ -158,8 +177,18 @@ namespace IdentCodes
             var profileType = GetProfileType(part);
             if (profileType == ProfileType.Plate)
                 return "0";
+            else if (profileType == ProfileType.Angle)
+                return GetNumberForAngles(part).ToString();
             else
                 return "";
+        }
+
+        private static int GetNumberForAngles(Part part)
+        {
+            if (GetProfileHeight(part).CompareTo(GetProfileWidth(part)) == 0)
+                return 0;
+            else
+                return 1;
         }
 
         public static int GetMaterialCode(string materialString)
@@ -200,6 +229,8 @@ namespace IdentCodes
             else if (profileType == ProfileType.Channel || profileType == ProfileType.HSection)
                 return Math.Round(GetProfileHeight(part)).ToString()
                     + Math.Round(GetWebThickness(part)).ToString();
+            else if (profileType == ProfileType.Angle)
+                return Math.Round(GetProfileHeight(part)).ToString() + Math.Round(GetAngleThickness(part)).ToString();
             else throw new Exception("Отсутствует код для заданного типа сечения");
         }
         #endregion
